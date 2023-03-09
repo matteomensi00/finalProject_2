@@ -124,8 +124,8 @@ def calculate_fare_2016(data):
     duration = data['trip_duration']
     
     
-    cost_per_mile = fare_per_mile * distance
-    cost_per_minute = (fare_per_minute * duration)/60
+    cost_per_mile = initial_charge + fare_per_mile * distance
+    cost_per_minute = initial_charge + (fare_per_minute * duration)/60
     
     start_hour = pd.to_datetime(data['pickup_datetime']).hour
     end_hour = pd.to_datetime(data['dropoff_datetime']).hour

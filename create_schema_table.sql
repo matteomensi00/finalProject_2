@@ -1,8 +1,8 @@
 
-DROP SCHEMA finalproject2 IF EXISTS;
+DROP SCHEMA finalproject2;
 CREATE SCHEMA IF NOT EXISTS finalproject2;
-DROP TABLE taxi_ny IF EXISTS;
-CREATE TABLE taxi_ny (
+DROP TABLE taxi_ny;
+CREATE TABLE IF NOT EXISTS taxi_ny (
 id varchar(20) primary key,
 vendor_id int(3) not null,
 pickup_datetime timestamp not null, 
