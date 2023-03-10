@@ -1,34 +1,4 @@
-import pandas as pd
-import requests
-import h3
-import datetime as dt
-
-data=pd.read_csv("trainsampled.csv")
-
-data['pickup_datetime'] = pd.to_datetime(data['pickup_datetime'])
-data['dropoff_datetime'] = pd.to_datetime(data['dropoff_datetime'])
-
-"""check on id. I will use drop function"""
-data.drop_duplicates(subset=['id'],inplace=True)
-
-"""check on date format"""
-data['pickup_datetime'] = data['pickup_datetime'].dt.strftime("%Y-%m-%d %H:%M:%S")
-data['dropoff_datetime'] = data['dropoff_datetime'].dt.strftime("%Y-%m-%d %H:%M:%S")
-
-""" check on dates. pickup_datetime < dropoff_datetime """
-data = data[data['pickup_datetime'] < data['dropoff_datetime']].copy()
-
-""" check on Nan of coordinates and any others column. let's exclude everything that is not none"""
-data = data.dropna(thresh=len(data.columns)-1).copy()
-
-""" check on passenger_count """
-data = data[(data['passenger_count']> 0) & (data['passenger_count'] <=6)].copy()
-
-""" check on trip duration: >0 and < 6 hour. 
-we assume that over 6 hours there is an error in the data """
-data = data[(data['trip_duration'] > 0) & (data['trip_duration'] <=21600)].copy()
-
-api_key="e5eec44335d5436b89247f909654bff2"
+#!/usr/bin/python3
 
 def extract_info_pickup(data):
     longitude = data['pickup_longitude']
@@ -141,13 +111,44 @@ def calculate_fare_2016(data):
     total_cost = max(cost_per_mile, cost_per_minute)
     return round(total_cost, 1)
 
+if __name__== "__main__":
+    import pandas as pd
+    import requests
+    import h3
+    import datetime as dt
+    data=pd.read_csv("trainsampled.csv")
 
-data[['pickup_street', 'pickup_suburb','pickup_city']] = data.apply(extract_info_pickup, axis=1)
-data[['dropoff_street', 'dropoff_suburb','dropoff_city']] = data.apply(extract_info_dropoff, axis=1)
-data['distance_miles'] = data.apply(calculate_distance, axis=1)
-data['trip_price'] = data.apply(calculate_fare_2016, axis=1)
+    data['pickup_datetime'] = pd.to_datetime(data['pickup_datetime'])
+    data['dropoff_datetime'] = pd.to_datetime(data['dropoff_datetime'])
 
-""" drop all rows which contan null values """
-data = data.dropna(thresh=len(data.columns)-1).copy()
+    """check on id. I will use drop function"""
+    data.drop_duplicates(subset=['id'],inplace=True)
 
-data.to_csv("taxi_ny.csv", index=False)
+    """check on date format"""
+    data['pickup_datetime'] = data['pickup_datetime'].dt.strftime("%Y-%m-%d %H:%M:%S")
+    data['dropoff_datetime'] = data['dropoff_datetime'].dt.strftime("%Y-%m-%d %H:%M:%S")
+
+    """ check on dates. pickup_datetime < dropoff_datetime """
+    data = data[data['pickup_datetime'] < data['dropoff_datetime']].copy()
+
+    """ check on Nan of coordinates and any others column. let's exclude everything that is not none"""
+    data = data.dropna(thresh=len(data.columns)-1).copy()
+
+    """ check on passenger_count """
+    data = data[(data['passenger_count']> 0) & (data['passenger_count'] <=6)].copy()
+
+    """ check on trip duration: >0 and < 6 hour. 
+    we assume that over 6 hours there is an error in the data """
+    data = data[(data['trip_duration'] > 0) & (data['trip_duration'] <=21600)].copy()
+
+    api_key="e5eec44335d5436b89247f909654bff2"
+
+    data[['pickup_street', 'pickup_suburb','pickup_city']] = data.apply(extract_info_pickup, axis=1)
+    data[['dropoff_street', 'dropoff_suburb','dropoff_city']] = data.apply(extract_info_dropoff, axis=1)
+    data['distance_miles'] = data.apply(calculate_distance, axis=1)
+    data['trip_price'] = data.apply(calculate_fare_2016, axis=1)
+
+    """ drop all rows which contan null values """
+    data = data.dropna(thresh=len(data.columns)-1).copy()
+
+    data.to_csv("taxi_ny.csv", index=False)

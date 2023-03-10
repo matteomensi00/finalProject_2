@@ -73,7 +73,7 @@ sources:
                 - dbt_expectations.expect_column_values_to_be_between:
                   min_value: -76  
                   max_value: -70
-          - name:  dropoff_latitude
+          - name: dropoff_latitude
             tests:
                 - dbt_expectations.expect_column_to_exist
                 - dbt_expectations.expect_column_values_to_not_be_null
