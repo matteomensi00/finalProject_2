@@ -127,6 +127,16 @@ if __name__== "__main__":
     """check on date format"""
     data['pickup_datetime'] = data['pickup_datetime'].dt.strftime("%Y-%m-%d %H:%M:%S")
     data['dropoff_datetime'] = data['dropoff_datetime'].dt.strftime("%Y-%m-%d %H:%M:%S")
+    
+    """ check on longitude to see if the coordinates are related to New York city. """
+
+    data = data[(data['pickup_longitude'] >= -76) & (data['pickup_longitude'] <= -70)].copy()
+    data = data[(data['dropoff_longitude'] >= -76) & (data['dropoff_longitude'] <= -70)].copy()
+
+    """ check on latitude to see if the coordinates are related to New York city. """
+
+    data = data[(data['pickup_latitude'] >= 31) & (data['pickup_latitude'] <= 37)].copy()
+    data = data[(data['dropoff_latitude'] >= 31) & (data['dropoff_latitude'] <= 37)].copy()
 
     """ check on dates. pickup_datetime < dropoff_datetime """
     data = data[data['pickup_datetime'] < data['dropoff_datetime']].copy()
