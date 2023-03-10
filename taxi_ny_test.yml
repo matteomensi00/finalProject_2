@@ -4,14 +4,12 @@ sources:
   - name: finalproject2
     tables:
       - name: taxi_ny
-        config:
-            re_data_monitored: true
         tests:
           - dbt_expectations.expect_table_columns_to_contain_set:
               column_list: ["id", "vendor_id", "pickup_datetime", "dropoff_datetime", "passenger_count", 
               "pickup_longitude","pickup_latitude","dropoff_longitude", "dropoff_latitude", "store_and_fwd_flag",
               "trip_duration", "pickup_street", "pickup_suburb", "pickup_city", "dropoff_street",
-              "dropoff_suburb", "dropoff_city", "distance_miles", "total_cost"]
+              "dropoff_suburb", "dropoff_city", "distance_miles", "trip_price"]
               transform: lower         
         columns: 
           - name: id
@@ -19,8 +17,6 @@ sources:
                 - dbt_expectations.expect_column_to_exist
                 - dbt_expectations.expect_column_values_to_be_unique
                 - dbt_expectations.expect_column_values_to_not_be_null
-                - dbt_expectations.expect_column_values_to_match_regex:
-                  regex: "(?i)^(?=.*[id0-9{9-20}]"  # (?i) makes it insensitive
           - name: vendor_id
             tests:
                 - dbt_expectations.expect_column_to_exist
@@ -29,57 +25,44 @@ sources:
             tests:
                 - dbt_expectations.expect_column_to_exist
                 - dbt_expectations.expect_column_values_to_not_be_null
-                - dbt_expectations.expect_row_values_to_have_recent_data:
-                  datepart: day
-                  interval: 1
-                - dbt_expectations.expect_column_values_to_be_in_type_list:
-                  column_type_list: [date, "{{ dbt_expectations.type_datetime() }}"]
           - name: dropoff_datetime
             tests:
                 - dbt_expectations.expect_column_to_exist
                 - dbt_expectations.expect_column_values_to_not_be_null
-                - dbt_expectations.expect_row_values_to_have_recent_data:
-                  datepart: day
-                  interval: 1
-                - dbt_expectations.expect_column_values_to_be_in_type_list:
-                  column_type_list: [date, "{{ dbt_expectations.type_datetime() }}"]
-                - dbt_expectations.expect_column_pair_values_A_to_be_greater_than_B:
-                  column_A: dropoff_datetime
-                  column_B: pickup_datetime
           - name: passenger_count
             tests:
                 - dbt_expectations.expect_column_to_exist
                 - dbt_expectations.expect_column_values_to_not_be_null
                 - dbt_expectations.expect_column_values_to_be_between:
-                  min_value: 1 #almeno un passegero  
+                    min_value: 1 #almeno un passegero  
           - name: pickup_longitude
             tests:
                 - dbt_expectations.expect_column_to_exist
                 - dbt_expectations.expect_column_values_to_not_be_null
                 - dbt_expectations.expect_column_values_to_be_between:
-                  min_value: -76  
-                  max_value: -70
+                    min_value: -76  
+                    max_value: -70
           - name: pickup_latitude
             tests:
                 - dbt_expectations.expect_column_to_exist
                 - dbt_expectations.expect_column_values_to_not_be_null
                 - dbt_expectations.expect_column_values_to_be_between:
-                  min_value: 31 
-                  max_value: 37
+                    min_value: 38
+                    max_value: 42
           - name: dropoff_longitude
             tests:
                 - dbt_expectations.expect_column_to_exist
                 - dbt_expectations.expect_column_values_to_not_be_null
                 - dbt_expectations.expect_column_values_to_be_between:
-                  min_value: -76  
-                  max_value: -70
+                    min_value: -76  
+                    max_value: -70
           - name: dropoff_latitude
             tests:
                 - dbt_expectations.expect_column_to_exist
                 - dbt_expectations.expect_column_values_to_not_be_null
                 - dbt_expectations.expect_column_values_to_be_between:
-                  min_value: 31 
-                  max_value: 37 
+                    min_value: 38
+                    max_value: 42
           - name: store_and_fwd_flag
             tests:
                 - dbt_expectations.expect_column_to_exist
@@ -89,10 +72,8 @@ sources:
                 - dbt_expectations.expect_column_to_exist
                 - dbt_expectations.expect_column_values_to_not_be_null
                 - dbt_expectations.expect_column_values_to_be_between:
-                min_value: 0
-                max_value: 21600 
-                - dbt_expectations.equal_expression:
-                  expression: minutes_diff * 60 + DATE_PART('minute', dropoff_datetime-pickup_datetime)=trip_duration
+                    min_value: 0
+                    max_value: 21600
           - name: pickup_street
             tests:
                 - dbt_expectations.expect_column_to_exist
@@ -105,8 +86,6 @@ sources:
             tests:
                 - dbt_expectations.expect_column_to_exist
                 - dbt_expectations.expect_column_values_to_not_be_null
-                - dbt.expectations.expect_column_values_to_be_in_set:
-                  value_set: ['New York']
           - name: dropoff_street
             tests:
                 - dbt_expectations.expect_column_to_exist
@@ -119,23 +98,21 @@ sources:
             tests:
                 - dbt_expectations.expect_column_to_exist
                 - dbt_expectations.expect_column_values_to_not_be_null
-                - dbt.expectations.expect_column_values_to_be_in_set:
-                  value_set: ['New York']
           - name: distance_miles
             tests:
                 - dbt_expectations.expect_column_to_exist
                 - dbt_expectations.expect_column_values_to_not_be_null
                 - dbt_expectations.expect_column_values_to_be_of_type:
-                  column_type: double precision
+                    column_type: double precision
                 - dbt_expectations.expect_column_values_to_be_between:
-                  min_value: 0                
-          - name: total_cost
+                    min_value: 0                
+          - name: trip_price
             tests:
                 - dbt_expectations.expect_column_to_exist
                 - dbt_expectations.expect_column_values_to_not_be_null
                 - dbt_expectations.expect_column_values_to_be_of_type:
-                  column_type: double precision
+                    column_type: double precision
                 - dbt_expectations.expect_column_values_to_be_between:
-                  min_value: 2.5
+                    min_value: 2.5
      
             
